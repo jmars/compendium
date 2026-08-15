@@ -22,12 +22,13 @@ then serves those records authoritatively over UDP (RFC 1035).
 
 ## Build
 
-Requires `cosmocc` and the `dhall-c` core as a sibling directory
-(`../dhall-c`; override with `DHALL_C=<path>`).
+Requires `cosmocc`. The `dhall-c` interpreter core is a **git submodule** at
+`./dhall-c` (override with `DHALL_C=<path>`).
 
 ```sh
-make            # builds dnsd.com + dnsd.com.dbg
-make test       # runs the full suite (config/lookup/query/wire/rl + live UDP)
+git submodule update --init   # fetch the dhall-c core (once after clone)
+make                          # builds dnsd.com + dnsd.com.dbg
+make test                     # runs the full suite (config/lookup/query/wire/rl + live UDP)
 ```
 
 ## Usage

@@ -1,12 +1,13 @@
 # dnsd — authoritative records-only DNS server over UDP, configured by Dhall.
-# Links the dhall-c interpreter core (sibling dir, overridable via DHALL_C).
+# Links the dhall-c interpreter core (git submodule at ./dhall-c, overridable
+# via DHALL_C).
 #  make            builds dnsd.com (+ dnsd.com.dbg) + test binaries
 #  make test       runs the full suite: config_check, wire_check, end-to-end UDP
 #  make clean
 
 # Use := (not ?=) so the environment's CC=cc does not override cosmocc.
 CC      := cosmocc
-DHALL_C ?= ../dhall-c
+DHALL_C ?= dhall-c
 CFLAGS   = -std=c11 -O2 -g -Wall -Wextra -I $(DHALL_C)/src
 
 # dhall-c core sources (link directly, in dhall-c's own order; exclude its
