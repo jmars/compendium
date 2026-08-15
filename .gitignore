@@ -1,0 +1,12 @@
+# Build artifacts (cosmocc APE + debug ELF + aarch64)
+*.com
+*.com.dbg
+*.aarch64.elf
+.ape-1.10
+
+# Private configs — the tigris zone data is NOT published
+config.tigris.dhall
+
+# Python
+__pycache__/
+*.pyc
