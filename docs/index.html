@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>compendium — an authoritative DNS server in C, configured by Dhall</title>
+  <meta name="description" content="compendium is a small, self-contained authoritative DNS server for UDP, configured in Dhall and compiled with cosmocc into a single portable APE binary. One C source, two targets: a native APE binary and a WebAssembly build that runs 100% in your browser.">
+  <meta name="theme-color" content="#0b0e14">
+  <meta property="og:title" content="compendium — an authoritative DNS server in C, configured by Dhall">
+  <meta property="og:description" content="A records-only authoritative DNS server over UDP, configured in typechecked Dhall, hardened for public exposure — one C source to a native APE binary and a browser wasm build.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="vendor/codemirror.css?v=2">
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="logo" href="#top">
+        <span class="logo-mark" aria-hidden="true">d</span>
+        <span>compendium</span>
+        <span class="logo-ver">v1.0</span>
+      </a>
+      <nav aria-label="Primary">
+        <a href="#targets">Two targets</a>
+        <a href="#demo">Live demo</a>
+        <a href="#features">Features</a>
+        <a href="#hardening">Hardening</a>
+        <a href="#quickstart">Build</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="wrap">
+      <p class="eyebrow">DNS · C11 · Dhall · one source, many targets</p>
+      <h1>An authoritative DNS server,<br>configured by <span class="grad">Dhall</span>.</h1>
+      <p class="lead">
+        A small, self-contained <strong>records-only authoritative DNS server</strong> for UDP.
+        Describe your zones in <strong>typechecked Dhall</strong>; serve them over the wire (RFC&nbsp;1035),
+        hardened for public exposure. The <strong>same C source</strong> ships two ways: a single portable
+        <strong>APE binary</strong> and a <strong>WebAssembly</strong> build that runs right here in your browser.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#demo">
+          <span class="btn-glyph" aria-hidden="true">▶</span> Query it in your browser
+        </a>
+        <a class="btn btn-ghost" href="#targets">
+          <span class="btn-glyph" aria-hidden="true">↓</span> Get the native binary
+        </a>
+      </div>
+      <ul class="badges">
+        <li><b>dnsd.com</b> · one APE binary, many platforms</li>
+        <li><b>dnsd.wasm</b> · 100% client-side, no server</li>
+        <li>A · AAAA · CNAME · TXT · MX · NS · SOA · CAA</li>
+      </ul>
+      <div class="terminal" role="img" aria-label="A terminal session running dnsd.com and make wasm">
+        <div class="term-bar">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="term-title">compendium — terminal</span>
+        </div>
+        <div class="term-body">
+          <div class="term-line"><span class="prompt">$</span> ./dnsd.com --config config.example.dhall --port 5353</div>
+          <div class="term-line out">loaded 2 zone(s) · listening on 127.0.0.1:5353</div>
+          <div class="term-line"><span class="prompt">$</span> dig @127.0.0.1 -p 5353 example.com A +short</div>
+          <div class="term-line out">192.0.2.1</div>
+          <div class="term-line"><span class="prompt">$</span> make wasm <span class="term-comment"># same C source → WebAssembly</span></div>
+          <div class="term-line out">docs/dnsd.js + docs/dnsd.wasm <span class="cursor" aria-hidden="true">▌</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="targets">
+    <div class="wrap">
+      <p class="eyebrow">One source · two targets</p>
+      <h2>Compiled once for C.<br>Delivered two ways.</h2>
+      <p class="sub">
+        The same lexer, parser, typechecker, and wire codec (<code>src/*.c</code>) build into two
+        artifacts — from your terminal to a browser tab.
+      </p>
+
+      <div class="flow" role="img" aria-label="How the C source splits into a native APE and WebAssembly">
+        <pre><code><span class="f-src">src/*.c</span>  <span class="f-mut">— config · dns wire/lookup · rl rate limiter · dhall-c core</span>
+
+        <span class="f-tree">├─</span> <span class="f-main">src/main.c</span>  <span class="f-mut">→ cosmocc    →</span> <span class="f-main">dnsd.com</span>   <span class="f-mut">one binary, many OSes</span>
+        <span class="f-tree">└─</span> <span class="f-wasm">src/dnsd-wasm.c</span> <span class="f-mut">→ emscripten →</span> <span class="f-wasm">dnsd.wasm</span>  <span class="f-mut">zero-install, in your browser</span></code></pre>
+      </div>
+
+      <div class="targets">
+        <article class="target target-native">
+          <div class="target-head">
+            <span class="target-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9.5l3 2.5-3 2.5"/><path d="M12 15h5"/></svg>
+            </span>
+            <div>
+              <h3>Native binary — <code>dnsd.com</code></h3>
+              <span class="chip chip-native">APE · cosmocc</span>
+            </div>
+          </div>
+          <p class="target-desc">
+            A single self-contained <strong>~1&nbsp;MB</strong> polyglot binary — an
+            <em>Actually Portable Executable</em> built with <code>cosmocc</code> (Cosmopolitan libc).
+            The same file runs natively, no VM, no runtime, no recompile:
+          </p>
+          <ul class="os-list">
+            <li>Linux</li><li>macOS</li><li>Windows</li><li>FreeBSD</li><li>NetBSD</li><li>OpenBSD</li>
+          </ul>
+          <p class="target-note">…and any other <code>x86-64</code> platform cosmocc targets.</p>
+          <p class="target-desc">
+            A UDP listener with per-source + global token-bucket rate limiting, authoritative
+            records-only semantics, and full bounds-checking on the remote wire path.
+          </p>
+          <div class="target-code"><pre><code>$ ./dnsd.com --config config.example.dhall --port 5353
+$ make          <span class="term-comment"># builds dnsd.com</span></code></pre></div>
+          <a class="btn btn-ghost btn-sm" href="#quickstart">Build &amp; usage</a>
+        </article>
+
+        <article class="target target-wasm">
+          <div class="target-head">
+            <span class="target-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.6 2.6 15 0 18"/><path d="M12 3c-2.6 2.6-2.6 15 0 18"/></svg>
+            </span>
+            <div>
+              <h3>In the browser — <code>dnsd.wasm</code></h3>
+              <span class="chip chip-wasm">WebAssembly</span>
+            </div>
+          </div>
+          <p class="target-desc">
+            The real C server compiled to a small <code>.wasm</code> module
+            (<code>dnsd.js</code> + <code>dnsd.wasm</code>). It runs <strong>100% client-side</strong> —
+            the actual <code>config_load</code> + <code>dns_handle_query</code>, no server, no build step.
+            Your config and queries never leave the tab.
+          </p>
+          <p class="target-note">
+            The demo below loads the exact <code>config.example.dhall</code> and answers real DNS
+            queries — decoded into records <em>and</em> as raw wire-format hex.
+          </p>
+          <div class="target-code"><pre><code>$ make wasm     <span class="term-comment"># → docs/dnsd.js + dnsd.wasm</span>
+$ node tests/wasm-smoke.js</code></pre></div>
+          <a class="btn btn-primary btn-sm" href="#demo">Try the live demo ↓</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="demo">
+    <div class="wrap">
+      <p class="eyebrow">WebAssembly · runs in this tab</p>
+      <h2>Live demo</h2>
+      <p class="sub">
+        Edit the Dhall config (a real <code>CodeMirror</code> editor with Dhall highlighting), then ask a
+        domain and record type. Press <kbd>Run</kbd>, <kbd>Enter</kbd>, or <kbd>Ctrl/⌘</kbd>+<kbd>Enter</kbd>.
+        The <strong>actual C server</strong> (<code>src/config.c</code> + <code>src/dns.c</code>, compiled to wasm)
+        loads the config, answers the query, and renders the decoded records plus the raw wire bytes.
+      </p>
+
+      <div class="demo">
+        <div class="window-bar">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="window-title">compendium — in your browser</span>
+          <span class="window-badge">wasm</span>
+        </div>
+
+        <div class="query-bar">
+          <label for="qname">Query</label>
+          <input type="text" id="qname" placeholder="www.example.com" spellcheck="false" autocomplete="off" autocapitalize="off">
+          <label for="qtype" style="margin-left:6px;">Type</label>
+          <select id="qtype">
+            <option value="1">A</option>
+            <option value="28">AAAA</option>
+            <option value="5">CNAME</option>
+            <option value="16">TXT</option>
+            <option value="15">MX</option>
+            <option value="2">NS</option>
+            <option value="6">SOA</option>
+            <option value="257">CAA</option>
+            <option value="255">ANY</option>
+          </select>
+          <button class="btn btn-primary run" id="runBtn">Run</button>
+        </div>
+
+        <div class="panes">
+          <div class="pane">
+            <label for="source">Dhall config</label>
+            <div class="editor-wrap">
+              <textarea id="source" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+            </div>
+          </div>
+          <div class="pane">
+            <label>Decoded answer</label>
+            <div class="answers" id="answers"><div class="ans-empty">loading wasm…</div></div>
+            <label style="margin-top:14px;">Raw wire (hex)</label>
+            <div class="hex" id="hex">—</div>
+          </div>
+        </div>
+
+        <div class="demo-foot">
+          <span class="status" id="status">loading wasm…</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="features">
+    <div class="wrap">
+      <p class="eyebrow">What it does</p>
+      <h2>A capable authoritative server</h2>
+      <p class="sub">Records-only, authoritative, UDP — no recursion, no forwarding, no AXFR.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="icon" aria-hidden="true">A</span>
+          <h3>Record types</h3>
+          <p><code>A</code>, <code>AAAA</code>, <code>CNAME</code>, <code>TXT</code>, <code>MX</code>, <code>NS</code>, <code>SOA</code>, and <code>CAA</code> (RFC&nbsp;8659).</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">D</span>
+          <h3>Dhall config</h3>
+          <p>Zones are described in Dhall, <strong>typechecked against their schema</strong>, evaluated at startup.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">1</span>
+          <h3>Semantics</h3>
+          <p>Authoritative answer / NODATA / NXDOMAIN, <code>ANY</code>, and suffix name-compression.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">⚙</span>
+          <h3>Single binary</h3>
+          <p>cosmocc → one portable <code>dnsd.com</code> APE binary for every major OS.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">W</span>
+          <h3>WebAssembly</h3>
+          <p>The same C server compiles to wasm and runs fully client-side in this page.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">✓</span>
+          <h3>Bounds-checked</h3>
+          <p>Full bounds-checking on the remote wire path — no unchecked reads on attacker input.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt reveal" id="hardening">
+    <div class="wrap">
+      <p class="eyebrow">Built for public exposure</p>
+      <h2>Hardening</h2>
+      <p class="sub">
+        A DNS server on the open internet is a reflection / amplification target. compendium is
+        deliberately conservative.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <span class="icon" aria-hidden="true">⇆</span>
+          <h3>Rate limiting</h3>
+          <p>Per-source token bucket (burst&nbsp;100 / 20&nbsp;q/s) <em>and</em> a global bucket (burst&nbsp;500 / 100&nbsp;q/s) that bounds total CPU even against a spoofed-source flood.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">✂</span>
+          <h3>TC truncation</h3>
+          <p>Answers capped at <code>MAX_ANSWERS</code> (16); the truncation (TC) bit is set when more records exist.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">⛔</span>
+          <h3>Response caps</h3>
+          <p>Responses capped at 512 bytes (<code>MAX_PKT</code>); EDNS0 is ignored — no large-response amplification.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">✕</span>
+          <h3>Strict rcodes</h3>
+          <p>Malformed packets get <code>FORMERR</code>, non-query opcodes <code>NOTIMP</code>, non-IN class <code>REFUSED</code>; short/QR packets are dropped.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">0</span>
+          <h3>No recursion</h3>
+          <p>Records-only and authoritative: no recursion, no forwarding, no AXFR, no open-resolver behavior.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">⎘</span>
+          <h3>Cached rdata</h3>
+          <p>A/AAAA rdata parsed once at config load; bounded name-compression probe depth on the wire path.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="quickstart">
+    <div class="wrap">
+      <p class="eyebrow">Build &amp; run</p>
+      <h2>Quickstart</h2>
+      <p class="sub">
+        Requires <code>cosmocc</code> (Cosmopolitan toolchain). The <code>dhall-c</code> interpreter core
+        is a git submodule at <code>./dhall-c</code>.
+      </p>
+
+      <div class="code-cols">
+        <div class="code-col">
+          <h3>Native — <code>make</code></h3>
+          <pre><code>git submodule update --init   <span class="term-comment"># fetch dhall-c core (once)</span>
+make            <span class="term-comment"># builds dnsd.com (APE) + dnsd.com.dbg (ELF)</span>
+make test       <span class="term-comment"># config/lookup/query/wire/rl + live UDP</span></code></pre>
+        </div>
+        <div class="code-col">
+          <h3>Browser — <code>make wasm</code></h3>
+          <pre><code>make wasm                <span class="term-comment"># → docs/dnsd.js + dnsd.wasm</span>
+node tests/wasm-smoke.js <span class="term-comment"># headless smoke test</span></code></pre>
+          <p class="col-note">Needs <code>emscripten clang lld llvm nodejs</code>.</p>
+        </div>
+      </div>
+
+      <h3 class="usage-h">Usage</h3>
+      <pre><code>./dnsd.com --config config.example.dhall --port 5353 --address 127.0.0.1
+# options: -c/--config (Dhall config, required) · -p/--port (default 5353) · -a/--address (default 127.0.0.1)</code></pre>
+
+      <h3 class="usage-h" style="margin-top:28px;">Config format</h3>
+      <pre><code>let Record = &lt; A     : { name : Text, ttl : Natural, value : Text }
+             | AAAA  : { name : Text, ttl : Natural, value : Text }
+             | CNAME : { name : Text, ttl : Natural, value : Text }
+             | TXT   : { name : Text, ttl : Natural, value : Text }
+             | MX    : { name : Text, ttl : Natural, priority : Natural, exchange : Text }
+             | NS    : { name : Text, ttl : Natural, value : Text }
+             | SOA   : { name : Text, ttl : Natural, mname : Text, rname : Text, serial : Natural
+                       , refresh : Natural, retry : Natural, expire : Natural, minimum : Natural }
+             | CAA   : { name : Text, ttl : Natural, flags : Natural, tag : Text, value : Text } &gt;
+in  let Zone   = { name : Text, records : List Record }
+in  let Config = { zones : List Zone }
+in  { zones = [ { name = "example.com.", records = [ &lt; A = { name = "@", ttl = 3600, value = "192.0.2.1" } &gt; ] } ] } : Config</code></pre>
+      <p class="col-note">Owner names are relative to the zone (<code>@</code> / <code>""</code> = apex); rdata target names are absolute FQDNs with a trailing dot. See <code>config.example.dhall</code> for a full example.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <div>
+        <p class="footer-logo">d <span class="logo-accent">compendium</span></p>
+        <p>A small, self-contained authoritative DNS server for UDP, configured in
+          <a href="https://dhall-lang.org/">Dhall</a> and compiled into a single portable APE binary with
+          <code>cosmocc</code>. This page is the server itself compiled to WebAssembly, served statically from <code>docs/</code>.</p>
+      </div>
+      <div class="footer-meta">
+        <span>built with <code>cosmocc</code></span>
+        <span>·</span>
+        <span>runs in your browser via <code>emscripten</code></span>
+        <span>·</span>
+        <span>interpreter core: <code>dhall-c</code></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="dnsd.js"></script>
+  <script src="vendor/codemirror.min.js?v=3"></script>
+  <script src="vendor/codemirror-simple.js?v=3"></script>
+  <script src="vendor/dhall-mode.js?v=3"></script>
+  <script src="app.js"></script>
+  <script>
+    /* Progressive enhancement: scroll-reveal. Safe to drop — content is visible
+     * without JS (no `.js` class) and always revealed under reduced-motion/no-IO. */
+    (function () {
+      var els = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+      if (!els.length) return;
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce || !('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>

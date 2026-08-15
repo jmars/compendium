@@ -59,4 +59,12 @@ clean:
 	      query_check.com query_check.com.dbg query_check.aarch64.elf \
 	      rl_check.com rl_check.com.dbg rl_check.aarch64.elf
 
-.PHONY: all test clean
+# Build the browser wasm demo (emscripten) into docs/ and smoke-test it.
+# Runs on the host where emscripten + node are installed; requires the
+# dhall-c submodule (git submodule update --init). The built docs/dnsd.js +
+# docs/dnsd.wasm are committed so CI (pages.yml) has no build step.
+wasm:
+	./scripts/build-wasm.sh
+	@node tests/wasm-smoke.js
+
+.PHONY: all test wasm clean
