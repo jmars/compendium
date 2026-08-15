@@ -1,5 +1,6 @@
 # Build artifacts (cosmocc APE + debug ELF + aarch64)
 *.com
+!dnsd.com
 *.com.dbg
 *.aarch64.elf
 .ape-1.10
