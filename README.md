@@ -1,4 +1,4 @@
-# dnsd
+# compendium
 
 A small, self-contained **authoritative DNS server** for **UDP**, configured in
 [Dhall](https://dhall-lang.org/) and compiled into a single portable APE binary
