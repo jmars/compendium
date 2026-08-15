@@ -8,6 +8,9 @@ It links the [dhall-c](https://github.com/jmars/dhall-c) interpreter core to
 parse, typecheck and normalize a Dhall config file describing zones and records,
 then serves those records authoritatively over UDP (RFC 1035).
 
+▶ **Try it live in your browser** — [https://jmars.github.io/compendium/](https://jmars.github.io/compendium/)
+(edit the Dhall config and query the real server, compiled to wasm, entirely client-side).
+
 ## Features
 
 - **Records:** `A`, `AAAA`, `CNAME`, `TXT`, `MX`, `NS`, `SOA`, `CAA` (RFC 8659)
