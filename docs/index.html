@@ -26,6 +26,7 @@
         <a href="#demo">Live demo</a>
         <a href="#features">Features</a>
         <a href="#hardening">Hardening</a>
+        <a href="#why">Why</a>
         <a href="#quickstart">Build</a>
       </nav>
     </div>
@@ -282,6 +283,47 @@ $ node tests/wasm-smoke.js</code></pre></div>
           <p>A/AAAA rdata parsed once at config load; bounded name-compression probe depth on the wire path.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="why">
+    <div class="wrap">
+      <p class="eyebrow">Why</p>
+      <h2>Why this exists</h2>
+      <p class="sub">
+        It started as a simple question: <em>can a real, useful network server be written in C,
+        configured in a typed language, and shipped as one self-contained binary?</em>
+        Three decisions shaped the answer.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <span class="icon" aria-hidden="true">λ</span>
+          <h3>The config is code — so it's typechecked</h3>
+          <p>dnsd doesn't parse a config file; it <em>interprets one</em>. Your zones are a Dhall
+          program, evaluated at startup by the same interpreter core this project shares with
+          <a href="https://github.com/jmars/dhall-c">dhall-c</a>. A typo in a record is a type
+          error before the server ever binds a port — configuration as code means configuration
+          that's verified.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">◎</span>
+          <h3>One C source, many targets</h3>
+          <p>The same lexer, parser, typechecker, and wire codec compile to a single
+          <strong>~1&nbsp;MB APE binary</strong> (<code>dnsd.com</code>) that runs on Linux, macOS,
+          Windows, and the BSDs — no runtime, no interpreter — <em>and</em> to
+          <strong>WebAssembly</strong> that runs the actual server, client-side, in a browser tab.
+          You don't write DNS in C twice; you write it once and decide how to ship it.</p>
+        </div>
+        <div class="card">
+          <span class="icon" aria-hidden="true">⊕</span>
+          <h3>Public servers demand conservative engineering</h3>
+          <p>An authoritative nameserver on the open internet is a reflection/amplification target,
+          so compendium is deliberately boring: rate limits, capped answers, no recursion, no
+          EDNS0 amplification, full bounds-checking — running unprivileged under
+          <code>MemoryDenyWriteExecute</code> + a seccomp allowlist with exactly one capability.</p>
+        </div>
+      </div>
+      <p class="sub"><em>Boring is the feature.</em> A DNS server that never needs a CVE is one you can forget about.</p>
     </div>
   </section>
 
