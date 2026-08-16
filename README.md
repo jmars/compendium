@@ -11,6 +11,41 @@ then serves those records authoritatively over UDP (RFC 1035).
 ▶ **Try it live in your browser** — [https://jmars.github.io/compendium/](https://jmars.github.io/compendium/)
 (edit the Dhall config and query the real server, compiled to wasm, entirely client-side).
 
+## Why
+
+This project started as a simple question: *can a real, useful network server be
+written in C, configured in a typed language, and shipped as one self-contained
+binary?*
+
+Three decisions shaped the answer:
+
+**1. The config is code — so it's typechecked.**
+dnsd doesn't parse a config file; it *interprets one*. Your zones are a Dhall
+program, evaluated at startup by the same interpreter core this project shares
+with [dhall-c](https://github.com/jmars/dhall-c). A typo in a record isn't a
+silent runtime surprise — it's a type error before the server ever binds a
+port. Configuration as code means configuration that's verified.
+
+**2. One C source, many targets.**
+The same lexer, parser, typechecker, and wire codec compile to:
+- a single **~1 MB APE binary** (`dnsd.com`) that runs on Linux, macOS, Windows,
+  and the BSDs — no runtime, no interpreter, just the file;
+- **WebAssembly** (`dnsd.wasm`) that runs the *actual server*, client-side, in
+  a browser tab.
+
+You don't write DNS in C twice. You write it once and decide how to ship it.
+
+**3. Public servers demand conservative engineering.**
+An authoritative nameserver on the open internet is a reflection/amplification
+target. So dnsd is deliberately boring: per-source *and* global rate limits,
+answers capped with proper TC truncation, no recursion, no EDNS0 large-response
+amplification, full bounds-checking on the wire path — and it runs unprivileged
+under `MemoryDenyWriteExecute` + a seccomp allowlist, with exactly one
+capability (`cap_net_bind_service`).
+
+*Boring is the feature.* A DNS server that never needs a CVE is one you can
+forget about.
+
 ## Features
 
 - **Records:** `A`, `AAAA`, `CNAME`, `TXT`, `MX`, `NS`, `SOA`, `CAA` (RFC 8659)
