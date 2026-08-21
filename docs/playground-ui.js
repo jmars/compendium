@@ -1,19 +1,37 @@
-/* app.js — wires the emscripten WASM module (window.createDnsd from dnsd.js)
- * to the live demo. Mirrors dhall-c's docs/app.js structure.
+/* playground-ui.js — wires the emscripten WASM module (window.createDnsd from
+ * dnsd.js) to the <compendium-playground> custom element's DOM. Ported from the
+ * old docs/app.js, re-scoped to the booting element via
+ * window.__compendiumPlaygroundRoot (set by compendium-playground.js before this
+ * script loads).
+ *
+ * DOM contract (built by compendium-playground.js):
+ *   #source   — textarea (CodeMirror, mode 'dhall')
+ *   #status   — status line
+ *   #runBtn   — Run button
+ *   #qname    — name input
+ *   #qtype    — query-type select (numeric value)
+ *   #answers  — decoded answer container
+ *   #hex      — raw wire bytes <pre>
  */
 (function () {
   'use strict';
 
+  var root = window.__compendiumPlaygroundRoot;
+  if (!root) {
+    // Nothing to boot against (e.g. a late SSR element with no client mount).
+    return;
+  }
+
   var Module = null;
 
-  var statusEl = document.getElementById('status');
-  var runBtn = document.getElementById('runBtn');
-  var qnameEl = document.getElementById('qname');
-  var qtypeEl = document.getElementById('qtype');
-  var answersEl = document.getElementById('answers');
-  var hexEl = document.getElementById('hex');
+  var statusEl = root.querySelector('#status');
+  var runBtn = root.querySelector('#runBtn');
+  var qnameEl = root.querySelector('#qname');
+  var qtypeEl = root.querySelector('#qtype');
+  var answersEl = root.querySelector('#answers');
+  var hexEl = root.querySelector('#hex');
 
-  var editor = CodeMirror.fromTextArea(document.getElementById('source'), {
+  var editor = CodeMirror.fromTextArea(root.querySelector('#source'), {
     mode: 'dhall',
     theme: 'dhall',
     lineNumbers: true,
@@ -140,7 +158,7 @@
 
   runBtn.addEventListener('click', doQuery);
   qnameEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') doQuery(); });
-  document.addEventListener('keydown', function (e) {
+  root.addEventListener('keydown', function (e) {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); doQuery(); }
   });
 

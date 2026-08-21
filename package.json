@@ -1,0 +1,31 @@
+{
+    "name": "compendium",
+    "version": "1.0.0",
+    "description": "compendium \u2014 a small, self-contained authoritative DNS server (UDP, RFC 1035) configured in Dhall. One C codebase, three targets: a native cosmocc APE binary, a WebAssembly build that runs in your browser, and a static docs site built on the Fixpoint design stack.",
+    "main": "index.js",
+    "directories": {
+        "doc": "dist",
+        "test": "tests"
+    },
+    "scripts": {
+        "build": "./vendor/dhake/dhake.com dist/index.html"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/fixpoint-linux/compendium.git"
+    },
+    "keywords": [],
+    "bugs": {
+        "url": "https://github.com/fixpoint-linux/compendium/issues"
+    },
+    "homepage": "https://github.com/fixpoint-linux/compendium#readme",
+    "devDependencies": {
+        "elm": "^0.19.2-0",
+        "elm-format": "^0.8.8",
+        "happy-dom": "^20.11.6"
+    },
+    "allowScripts": {
+        "elm@0.19.2-0": true,
+        "elm-format@0.8.8": true
+    }
+}

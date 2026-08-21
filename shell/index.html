@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>compendium — a small, self-contained authoritative DNS server (UDP, RFC 1035), configured in Dhall, compiled to a portable APE and WebAssembly</title>
+<meta name="description" content="compendium: a small, self-contained authoritative DNS server (UDP, RFC 1035) configured in Dhall, shipped as a single portable APE binary plus a WebAssembly build that runs in your browser. Part of fixpoint-linux.">
+<script type="importmap">
+{
+  "imports": {
+    "@mfe/core": "/vendor/@mfe/core/index.js",
+    "@mfe/framework": "/vendor/@mfe/framework/index.js",
+    "compendium-landing": "/compendium/shell/mfe/compendium-page.js",
+    "compendium-config": "/compendium/shell/mfe/compendium-page.js",
+    "compendium-cli": "/compendium/shell/mfe/compendium-page.js",
+    "compendium-api": "/compendium/shell/mfe/compendium-page.js",
+    "compendium-playground": "/compendium/shell/mfe/compendium-page.js",
+    "fixpoint-landing": "/shell/mfe/fixpoint-landing.js"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app" ssr>
+  <div class="fixpoint-root">
+    <div data-mfe="compendium-landing"><!-- ssg.mjs injects --></div>
+  </div>
+</div>
+<script type="module" src="/compendium/shell/shell.js"></script>
+</body>
+</html>

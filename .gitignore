@@ -11,3 +11,10 @@ config.tigris.dhall
 # Python
 __pycache__/
 *.pyc
+
+# Elm + MFE site build artifacts (the fixpoint design-component site)
+.cache/
+node_modules/
+elm-stuff/
+dist/
+/vendor/@mfe/
