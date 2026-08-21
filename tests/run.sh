@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# dnsd test suite. Run from the project root (make test), or directly:
+# dnsd test suite. Run from the project root (dhake test), or directly:
 #   bash tests/run.sh
 # Covers:
 #   - config_check: Dhall config walked into zones/records (Stage 1)
@@ -12,8 +12,8 @@ set -u
 
 cd "$(dirname "$0")/.."
 
-# Build everything (idempotent).
-make all >/dev/null 2>&1 || { echo "FAIL: make all"; exit 1; }
+# Build everything (idempotent) via dhake.
+./vendor/dhake/dhake.com all >/dev/null 2>&1 || { echo "FAIL: dhake all"; exit 1; }
 
 PY=tests/dnsproto.py
 pass=0; fail=0

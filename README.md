@@ -61,13 +61,23 @@ forget about.
 ## Build
 
 Requires `cosmocc`. The `dhall-c` interpreter core is a **git submodule** at
-`./dhall-c` (override with `DHALL_C=<path>`).
+`./dhall-c`. The build is driven by **dhake** (`Dhakefile.dhall`), which replaces
+the former Makefile and uses **verified builds** — each C target pins the expected
+sha256 of its output and every source dependency, so a build fails loudly if any
+input or the deterministic APE output hashes to something unexpected.
 
 ```sh
 git submodule update --init   # fetch the dhall-c core (once after clone)
-make                          # builds dnsd.com + dnsd.com.dbg
-make test                     # runs the full suite (config/lookup/query/wire/rl + live UDP)
+./vendor/dhake/dhake.com      # builds dnsd.com + all test binaries (default: all)
+./vendor/dhake/dhake.com all  # same, explicit
+./vendor/dhake/dhake.com test # runs the full suite (config/lookup/query/wire/rl + live UDP)
+./vendor/dhake/dhake.com dist/index.html   # build the docs site (fixpointlinux.org/compendium)
+./vendor/dhake/dhake.com clean             # remove built binaries
 ```
+
+If a source or the toolchain changes and a pinned hash goes stale, rebuild with
+`./vendor/dhake/dhake.com --warn-hash-mismatch all` to print the actual hashes
+and copy them into `Dhakefile.dhall`.
 
 ## Usage
 
